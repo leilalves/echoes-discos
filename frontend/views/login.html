@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echoes Discos — Acesso</title>
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon.png">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <!-- CSS customizado -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="login-wrapper">
+
+    <div class="login-box">
+
+        <!-- Cabeçalho vermelho -->
+        <div class="login-topo">
+            <h2>ACESSO RESTRITO</h2>
+        </div>
+
+        <!-- Formulário -->
+        <div class="login-body">
+            <label for="username"><i class="bi bi-person"></i> Usuário</label>
+            <input type="text" id="username" placeholder="Digite seu usuário" autocomplete="username">
+
+            <label for="password"><i class="bi bi-key"></i> Senha</label>
+            <input type="password" id="password" placeholder="Digite sua senha" autocomplete="current-password">
+
+            <!-- Mensagem de erro (oculta por padrão) -->
+            <p class="login-erro" id="loginErro">Usuário ou senha incorretos.</p>
+
+            <button class="btn-acessar" id="btnAcessar" onclick="fazerLogin()">
+                ACESSAR PAINEL <i class="bi bi-arrow-right"></i>
+            </button>
+
+            <p style="text-align:center; font-family:'Mango'; color:#999; margin-top:.8rem; font-size:.95rem;">
+                Admin → dashboard completo &nbsp;|&nbsp; Usuário → visualização
+            </p>
+
+            <a href="/"><button class="btn-voltar">
+                <i class="bi bi-arrow-left"></i> VOLTAR PARA O SITE
+            </button></a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        /* ============================================================
+           login.js (inline) — Autenticação via API
+           ============================================================ */
+
+        // Se já está logado, redireciona direto
+        verificarSessaoExistente();
+
+        async function verificarSessaoExistente() {
+            try {
+                const res  = await fetch('/api/sessao', { credentials: 'include' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.success && data.user) {
+                        window.location.href = data.user.role === 'admin' ? '/dashboard' : '/painel';
+                    }
+                }
+            } catch (_) {}
+        }
+
+        // Permite fazer login ao pressionar Enter
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter') fazerLogin();
+        });
+
+        async function fazerLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const erro     = document.getElementById('loginErro');
+            const btn      = document.getElementById('btnAcessar');
+
+            erro.style.display = 'none';
+
+            if (!username || !password) {
+                erro.textContent  = 'Preencha usuário e senha.';
+                erro.style.display = 'block';
+                return;
+            }
+
+            btn.disabled    = true;
+            btn.textContent = 'Aguarde…';
+
+            try {
+                const res  = await fetch('/api/login', {
+                    method:      'POST',
+                    headers:     { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body:        JSON.stringify({ username, password })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    // Redireciona conforme o perfil retornado pela API
+                    window.location.href = data.redirectTo;
+                } else {
+                    erro.textContent   = data.message || 'Credenciais inválidas.';
+                    erro.style.display = 'block';
+                    btn.disabled       = false;
+                    btn.innerHTML      = 'ACESSAR PAINEL <i class="bi bi-arrow-right"></i>';
+                }
+            } catch (e) {
+                erro.textContent   = 'Erro de conexão. Tente novamente.';
+                erro.style.display = 'block';
+                btn.disabled       = false;
+                btn.innerHTML      = 'ACESSAR PAINEL <i class="bi bi-arrow-right"></i>';
+            }
+        }
+    </script>
+</body>
+</html>

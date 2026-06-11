@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echoes — Meu Catálogo</title>
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon.png">
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <!-- CSS customizado -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="body-usuario">
+
+    <!-- ── CABEÇALHO ──────────────────────────────────────────── -->
+    <div class="painel-header">
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-disc fs-4 text-white"></i>
+            <h2>Echoes Discos — Meu Catálogo</h2>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <a href="/" style="color:#ffe; font-family:'Mango'; font-size:1rem; text-decoration:none;">
+                <i class="bi bi-house me-1"></i>Site
+            </a>
+            <span class="usuario-info" id="nomeUsuario"></span>
+            <button class="btn-sair" onclick="fazerLogout()">Sair</button>
+        </div>
+    </div>
+
+    <!-- ── DESTAQUES ──────────────────────────────────────────── -->
+    <div class="painel-catalogos">
+        <h3>⭐ Em Alta</h3>
+        <div class="painel-grid" id="gridDestaques">
+            <p class="loading-msg" style="grid-column:1/-1;">Carregando destaques…</p>
+        </div>
+    </div>
+
+    <hr style="border-color: rgba(255,255,255,.1); margin: 0 2rem;">
+
+    <!-- ── CATÁLOGO COMPLETO ───────────────────────────────────── -->
+    <div class="painel-catalogos">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>🎵 Catálogo Completo</h3>
+            <!-- Pesquisa -->
+            <input type="text" id="pesquisaPainel" placeholder="Pesquisar disco ou artista…"
+                   oninput="filtrarPainel()"
+                   style="background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2);
+                          color:white; padding:.5rem 1rem; border-radius:4px;
+                          font-family:'Mango'; width:280px;">
+        </div>
+
+        <!-- Filtros rápidos -->
+        <div class="d-flex gap-2 mb-3 flex-wrap">
+            <button class="btn-filtro-genero ativo" data-genero="" onclick="filtrarGenero(this, '')">Todos</button>
+            <button class="btn-filtro-genero" data-genero="grunge"   onclick="filtrarGenero(this, 'grunge')">Grunge</button>
+            <button class="btn-filtro-genero" data-genero="hip-hop"  onclick="filtrarGenero(this, 'hip-hop')">Hip-Hop</button>
+            <button class="btn-filtro-genero" data-genero="mpb"      onclick="filtrarGenero(this, 'mpb')">MPB</button>
+            <button class="btn-filtro-genero" data-genero="k-pop"    onclick="filtrarGenero(this, 'k-pop')">K-Pop</button>
+            <button class="btn-filtro-genero" data-genero="dark wave" onclick="filtrarGenero(this, 'dark wave')">Dark Wave</button>
+        </div>
+
+        <div class="painel-grid" id="gridCatalogo">
+            <p class="loading-msg" style="grid-column:1/-1;">Carregando catálogo…</p>
+        </div>
+    </div>
+
+    <!-- ── MODAL DE DETALHES (visualização) ───────────────────── -->
+    <div class="modal-admin-overlay" id="modalDetalheOverlay">
+        <div class="modal-admin-box" style="max-width:480px;">
+            <div style="display:flex; gap:1rem; align-items:flex-start;">
+                <img id="detalheImg" src="" alt="capa" style="width:130px; height:130px; object-fit:cover; border-radius:4px;">
+                <div>
+                    <h3 id="detalheAlbum" style="font-size:1.6rem; margin-bottom:.3rem;"></h3>
+                    <p id="detalheArtista" style="color:#ccc; margin:0; font-family:'Mango';"></p>
+                    <p id="detalheGeneros" style="color:#999; font-size:.9rem; font-family:'Mango'; margin:.3rem 0;"></p>
+                    <p id="detalheStatus"  style="font-size:.9rem; margin:0;"></p>
+                </div>
+            </div>
+            <p id="detalheDescricao" style="color:#ccc; font-family:'Mango'; margin-top:1rem; line-height:1.5;"></p>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem;">
+                <span id="detalhePreco" style="font-family:'Mango'; font-size:2rem; color:var(--bege);"></span>
+                <span id="detalheEstoque" style="font-family:'Mango'; color:#aaa;"></span>
+            </div>
+            <button class="btn-cancelar" onclick="fecharDetalhe()" style="margin-top:1rem; width:100%;">Fechar</button>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast-notif" id="toastNotif"></div>
+
+    <!-- Estilos extras inline para os botões de filtro de gênero -->
+    <style>
+        .btn-filtro-genero {
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.2);
+            color: #ccc;
+            padding: .3rem .9rem;
+            border-radius: 20px;
+            font-family: 'Mango';
+            font-size: .9rem;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .btn-filtro-genero:hover,
+        .btn-filtro-genero.ativo {
+            background: var(--vermelho-fonte);
+            border-color: var(--vermelho-fonte);
+            color: white;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    /* ============================================================
+       painel-usuario.js (inline) — Painel de visualização
+       ============================================================ */
+
+    let todosDiscos = [];
+    let generoAtivo  = '';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        await verificarUsuario();
+        await carregarTodos();
+    });
+
+    // ── Verificação de sessão ─────────────────────────────────
+    async function verificarUsuario() {
+        try {
+            const res  = await fetch('/api/sessao', { credentials: 'include' });
+            const data = await res.json();
+            if (!data.success || !data.user) {
+                window.location.href = '/login';
+                return;
+            }
+            // Admin acessou a URL errada — redireciona
+            if (data.user.role === 'admin') {
+                window.location.href = '/dashboard';
+                return;
+            }
+            document.getElementById('nomeUsuario').textContent = '👤 ' + data.user.username;
+        } catch (_) {
+            window.location.href = '/login';
+        }
+    }
+
+    // ── Logout ────────────────────────────────────────────────
+    async function fazerLogout() {
+        await fetch('/api/logout', { method: 'POST', credentials: 'include' });
+        window.location.href = '/login';
+    }
+
+    // ── Carregar discos ───────────────────────────────────────
+    async function carregarTodos() {
+        try {
+            const res    = await fetch('/api/discos', { credentials: 'include' });
+            todosDiscos  = await res.json();
+
+            renderizarDestaques();
+            renderizarCatalogo(todosDiscos);
+        } catch (e) {
+            document.getElementById('gridDestaques').innerHTML =
+                '<p class="erro-msg" style="grid-column:1/-1;">Erro ao carregar.</p>';
+        }
+    }
+
+    function renderizarDestaques() {
+        const grid = document.getElementById('gridDestaques');
+        const dest = todosDiscos.filter(d => d.destaque && d.status === 'Disponível');
+        if (!dest.length) {
+            grid.innerHTML = '<p style="color:#888; font-family:\'Mango\'; grid-column:1/-1;">Nenhum disco em destaque no momento.</p>';
+            return;
+        }
+        grid.innerHTML = dest.map(d => cardDisco(d)).join('');
+    }
+
+    function renderizarCatalogo(lista) {
+        const grid = document.getElementById('gridCatalogo');
+        if (!lista.length) {
+            grid.innerHTML = '<p style="color:#888; font-family:\'Mango\'; grid-column:1/-1;">Nenhum disco encontrado.</p>';
+            return;
+        }
+        grid.innerHTML = lista.map(d => cardDisco(d)).join('');
+    }
+
+    function cardDisco(d) {
+        const capa  = resolverImagem(d.imagem);
+        const badge = d.status === 'Indisponível'
+            ? '<span class="badge-indisponivel" style="font-size:.75rem;">Indisponível</span>' : '';
+        return `
+          <div class="painel-card" onclick="abrirDetalhe(${JSON.stringify(d).replace(/"/g,'&quot;')})">
+            <img src="${capa}" alt="${d.album}">
+            <div class="painel-card-info">
+              <p class="nome">${d.album}</p>
+              <p class="artista">${d.artista}</p>
+              <p class="preco">R$ ${parseFloat(d.preco).toFixed(2).replace('.',',')}</p>
+              ${badge}
+            </div>
+          </div>`;
+    }
+
+    // ── Filtros ───────────────────────────────────────────────
+    function filtrarPainel() {
+        aplicarFiltros();
+    }
+
+    function filtrarGenero(btn, genero) {
+        generoAtivo = genero;
+        document.querySelectorAll('.btn-filtro-genero').forEach(b => b.classList.remove('ativo'));
+        btn.classList.add('ativo');
+        aplicarFiltros();
+    }
+
+    function aplicarFiltros() {
+        const termo = (document.getElementById('pesquisaPainel').value || '').toLowerCase();
+        const filtrado = todosDiscos.filter(d => {
+            const textoOk  = !termo ||
+                d.album.toLowerCase().includes(termo) ||
+                d.artista.toLowerCase().includes(termo) ||
+                d.generos.toLowerCase().includes(termo);
+            const generoOk = !generoAtivo ||
+                d.generos.toLowerCase().includes(generoAtivo);
+            return textoOk && generoOk;
+        });
+        renderizarCatalogo(filtrado);
+    }
+
+    // ── Modal de detalhes ─────────────────────────────────────
+    function abrirDetalhe(d) {
+        const capa = resolverImagem(d.imagem);
+        document.getElementById('detalheImg').src      = capa;
+        document.getElementById('detalheAlbum').textContent    = d.album;
+        document.getElementById('detalheArtista').textContent  = d.artista;
+        document.getElementById('detalheGeneros').textContent  = d.generos;
+        document.getElementById('detalheDescricao').textContent= d.descricao;
+        document.getElementById('detalhePreco').textContent    =
+            'R$ ' + parseFloat(d.preco).toFixed(2).replace('.', ',');
+        document.getElementById('detalheEstoque').textContent  =
+            `${d.quantidade} em estoque`;
+        document.getElementById('detalheStatus').innerHTML     = d.status === 'Disponível'
+            ? '<span style="color:#5cb85c;">● Disponível</span>'
+            : '<span style="color:#d9534f;">● Indisponível</span>';
+        document.getElementById('modalDetalheOverlay').classList.add('aberto');
+    }
+
+    function fecharDetalhe() {
+        document.getElementById('modalDetalheOverlay').classList.remove('aberto');
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') fecharDetalhe();
+    });
+
+    // ── Utilitário de imagem ──────────────────────────────────
+    function resolverImagem(imagem) {
+        if (!imagem) return '/assets/img/disco-2.jpg';
+        if (imagem.startsWith('http')) return imagem;
+        if (imagem.includes('/')) return imagem;
+        const assets = ['hole','pumapjl','ashnikko','vegan','alice','yago','fx','djavan',
+                        'molchat','dracula','dtmf','mansbff','bracoreso','men','vinil',
+                        'discos','disco-2','echoes','favicon','lupa','disco-dash','queen'];
+        return assets.some(n => imagem.startsWith(n))
+            ? `/assets/img/${imagem}` : `/uploads/${imagem}`;
+    }
+
+    function mostrarToast(msg, tipo = 'sucesso') {
+        const t = document.getElementById('toastNotif');
+        t.textContent = msg;
+        t.className   = `toast-notif ${tipo}`;
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 3500);
+    }
+    </script>
+</body>
+</html>

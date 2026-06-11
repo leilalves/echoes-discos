@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicon.png">
+  <title>Echoes Discos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- ── NAVBAR ───────────────────────────────────────────────── -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container-fluid">
+    <button class="navbar-toggler" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="#alta">Alta</a></li>
+        <li class="nav-item"><a class="nav-link" href="#catalogue">Catálogo</a></li>
+        <li class="nav-item"><a class="nav-link" href="#sobre">Sobre</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contact">Contato</a></li>
+      </ul>
+    </div>
+  </div>
+  <!-- Lupa abre barra de busca inline -->
+  <i class="fa-solid fa-magnifying-glass nav-icon" id="btnBusca" title="Pesquisar"></i>
+  <a href="/login" class="nav-icon" title="Entrar">
+    <i class="fa-regular fa-user"></i>
+  </a>
+  <!-- Barra de busca (aparece ao clicar na lupa) -->
+  <div id="barraBusca">
+    <input type="text" id="buscaNavbar" placeholder="Buscar disco ou artista…" autocomplete="off">
+  </div>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────────── -->
+<section class="hero" id="hero">
+  <!-- Títulos na frente (z-index:2) -->
+  <div class="title">
+    <h1 class="echoes">ECHOES</h1>
+    <p class="desc">Música que você toca</p>
+    <h1 class="discos">DISCOS</h1>
+  </div>
+
+  <!-- Botão alinhado à DIREITA, afastado do título -->
+  <div class="hero-btn-wrapper">
+    <div class="button">
+      <a href="#catalogue" class="btn">ache seu disco
+        <svg width="50" height="50" fill="none" viewBox="0 0 24 24">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                stroke-width="1.5" d="M17.25 8.75V17.25H8.75"/>
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                stroke-width="1.5" d="M17 17L6.75 6.75"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Imagem do braço fica atrás (z-index:1) -->
+  <div class="arm">
+    <img src="/assets/img/bracoreso.png" class="arm-vinyl" alt="Mão segurando disco de vinil">
+  </div>
+</section>
+
+<!-- ── EM ALTA ───────────────────────────────────────────────── -->
+<h2 class="page-title" id="alta">Em Alta</h2>
+<div id="customCarousel" class="carousel slide" data-bs-ride="carousel" style="background:#111;">
+  <div class="carousel-inner" id="carouselInner">
+    <div class="carousel-item active" style="height:100vh;">
+      <div class="d-flex justify-content-center align-items-center h-100">
+        <p class="loading-msg">Carregando destaques…</p>
+      </div>
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button"
+          data-bs-target="#customCarousel" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon"></span>
+  </button>
+  <button class="carousel-control-next" type="button"
+          data-bs-target="#customCarousel" data-bs-slide="next">
+    <span class="carousel-control-next-icon"></span>
+  </button>
+</div>
+
+<!-- ── CATÁLOGO ─────────────────────────────────────────────── -->
+<section class="catalogue" id="catalogue">
+  <h2 class="page-title-discos">Discos</h2>
+  <div class="filtros">
+    <button class="disponiveis ativo" id="btnDisponiveis"
+            onclick="filtrarCatalogo('disponiveis')">
+      Disponíveis <img class="setinha" src="/assets/img/sort-down-solid.png" alt="">
+    </button>
+    <button class="indisponiveis" id="btnIndisponiveis"
+            onclick="filtrarCatalogo('indisponiveis')">
+      Indisponíveis <img class="setinha" src="/assets/img/sort-down-solid.png" alt="">
+    </button>
+    <input type="text" id="pesquisa" placeholder="Pesquisar" oninput="pesquisaCatalogo()">
+  </div>
+
+  <div class="catalogo" id="catalogoGrid">
+    <div style="grid-column:1/-1;">
+      <p class="loading-msg">Carregando catálogo…</p>
+    </div>
+  </div>
+
+  <div class="prev-next">
+    <i class="fa-solid fa-angle-left fa-2xl" style="color:rgb(255,246,194);" onclick="mudarPagina(-1)"></i>
+    <span id="paginaInfo" style="color:#aaa; font-family:'Mango'; font-size:1.2rem;"></span>
+    <i class="fa-solid fa-angle-right fa-2xl" style="color:rgb(255,246,194);" onclick="mudarPagina(1)"></i>
+  </div>
+</section>
+
+<!-- ── SOBRE ─────────────────────────────────────────────────── -->
+<section class="sobre" id="sobre">
+  <div class="titulo-vertical">
+    <h1>ECHOES</h1>
+    <h2>Sobre a</h2>
+  </div>
+  <div class="conteudo">
+    <p class="descricao">
+      Somos uma loja virtual de discos de vinil criada para você, que ama subverter as
+      expectativas contemporâneas de consumo de música. Fugimos do básico álbum
+      digital e incentivamos o movimento vintage do disco físico, que conecta você ao seu
+      artista preferido e com a arte que só pode ser consumida pelo toque.
+    </p>
+    <div class="galeria">
+      <img src="/assets/img/men.png" alt="Pessoa ouvindo disco" class="img-men">
+      <div class="imagens-lado">
+        <img src="/assets/img/vinil.jpg" class="img-vinil" alt="Disco de vinil">
+        <img src="/assets/img/discos.jpg" class="img-discos" alt="Coleção de discos">
+      </div>
+      <img class="disco-2" src="/assets/img/disco-2.jpg" alt="Disco de vinil">
+    </div>
+  </div>
+</section>
+
+<!-- ── CONTATO ───────────────────────────────────────────────── -->
+<section class="contact" id="contact">
+  <div class="title-contact">
+    <h2 class="page-title-contato-inv">Contato</h2>
+    <h2 class="page-title-contato">Contato</h2>
+    <h2 class="page-title-contato-inv">Contato</h2>
+  </div>
+  <div class="metades">
+    <div class="acervo">
+      <h5 class="procurou">Procurou e não achou?</h5>
+      <p class="sugestao">Temos a maior coleção da América Latina, mas estamos sempre
+        procurando expandi-la. Dê sua sugestão!</p>
+      <img class="colecao" src="/assets/img/discos.png" alt="Coleção de discos">
+    </div>
+    <div class="formulario">
+      <h3 class="conversa">Vamos conversar!</h3>
+      <form id="formContato" onsubmit="enviarContato(event)">
+        <div class="cubos">
+          <div>
+            <label class="label" for="nomeContato">Nome</label>
+            <input type="text" id="nomeContato" placeholder="">
+          </div>
+          <div>
+            <label class="label" for="emailContato">Email</label>
+            <input type="email" id="emailContato" placeholder="">
+          </div>
+        </div>
+        <div>
+          <label class="label">Como podemos te ajudar?</label>
+          <textarea name="mensagem" cols="35" rows="6" required></textarea>
+        </div>
+        <button type="submit" class="enviar">Enviar</button>
+      </form>
+      <div class="sociais">
+        <div class="sociais-content">
+          <h3 class="siga">Nos siga!</h3>
+          <div class="redes">
+            <img class="icon-rede" src="/assets/img/instagram-brands-solid.png" alt="Instagram">
+            <img class="icon-rede" src="/assets/img/twitter-brands-solid.png" alt="Twitter">
+            <img class="icon-rede" src="/assets/img/youtube-brands-solid.png" alt="YouTube">
+            <img class="icon-rede" src="/assets/img/square-facebook-brands-solid.png" alt="Facebook">
+            <img class="icon-rede" src="/assets/img/tiktok-brands-solid.png" alt="TikTok">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────── -->
+<footer class="secao-footer">
+  <div class="logo-footer">
+    <h1>ECHOES</h1>
+    <h2>DISCOS</h2>
+  </div>
+  <div class="footer-coluna">
+    <h3>explore</h3>
+    <ul>
+      <li><a href="#hero">home</a></li>
+      <li><a href="#alta">em alta</a></li>
+      <li><a href="#catalogue">catálogo</a></li>
+      <li><a href="#contact">contato</a></li>
+    </ul>
+  </div>
+  <div class="footer-coluna">
+    <h3>acesso restrito</h3>
+    <ul>
+      <li><a href="/login">entrar</a></li>
+      <li><a href="/dashboard">dashboard</a></li>
+    </ul>
+  </div>
+  <div class="footer-coluna">
+    <h3>contatos</h3>
+    <ul>
+      <li>loops@echoes.com</li>
+      <li>ads@echoes.com</li>
+      <li>+55 11 99999-6767</li>
+    </ul>
+  </div>
+  <div class="copyright">Copyright © Echoes Discos — Todos os direitos reservados</div>
+</footer>
+
+<!-- ── MODAL DE ÁLBUM ─────────────────────────────────────────── -->
+<div class="album-modal" id="albumModal">
+  <div class="modal-fundo" onclick="fecharModal()"></div>
+  <div class="modal-content">
+    <div class="modal-topo">
+      <div class="modal-imagem">
+        <img id="modalCapa" src="" alt="Capa do álbum">
+      </div>
+      <div class="modal-info">
+        <h1 id="modalAlbum">—</h1>
+        <p id="modalArtista">—</p>
+        <p id="modalGeneros">—</p>
+        <p id="modalStatus">—</p>
+      </div>
+    </div>
+    <div class="modal-descricao">
+      <p id="modalDescricao">—</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-carrinho" id="btnCarrinho" onclick="adicionarAoCarrinho()">
+        Adicionar ao carrinho
+      </button>
+      <h2 id="modalPreco">—</h2>
+    </div>
+  </div>
+</div>
+
+<!-- ── CARRINHO ───────────────────────────────────────────────── -->
+<div id="carrinhoOverlay" style="display:none;position:fixed;inset:0;z-index:10000;justify-content:flex-end;align-items:flex-start;">
+  <div onclick="fecharCarrinho()" style="position:absolute;inset:0;background:rgba(0,0,0,.5);"></div>
+  <div id="carrinhoPanel" style="position:relative;z-index:1;width:380px;max-width:95vw;height:100vh;background:#111;border-left:1px solid rgba(255,246,195,.2);display:flex;flex-direction:column;overflow:hidden;">
+    <div style="background:rgba(150,97,12,1);padding:1rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">
+      <h3 style="font-family:'Mango';color:white;margin:0;font-size:1.6rem;">🛒 Carrinho</h3>
+      <button onclick="fecharCarrinho()" style="background:transparent;border:none;color:white;font-size:1.6rem;cursor:pointer;">✕</button>
+    </div>
+    <div id="carrinhoItens" style="flex:1;overflow-y:auto;padding:1rem;"></div>
+    <div style="border-top:1px solid rgba(255,246,195,.15);padding:1rem 1.2rem;background:#1a1a1a;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem;">
+        <span style="font-family:'Mango';color:#ccc;font-size:1.1rem;">Total</span>
+        <span id="carrinhoTotal" style="font-family:'Mango';color:#FFF6C3;font-size:1.8rem;font-weight:800;">R$ 0,00</span>
+      </div>
+      <button onclick="finalizarCompra()" style="width:100%;background:rgba(150,97,12,1);color:white;border:none;padding:.8rem;font-family:'Mango';font-size:1.2rem;border-radius:4px;cursor:pointer;margin-bottom:.5rem;">Finalizar Compra →</button>
+      <button onclick="limparCarrinho()" style="width:100%;background:transparent;color:#888;border:1px solid #333;padding:.5rem;font-family:'Mango';font-size:.9rem;border-radius:4px;cursor:pointer;">Limpar carrinho</button>
+    </div>
+  </div>
+</div>
+
+<!-- Ícone flutuante do carrinho -->
+<div id="carrinhoFlutuante" onclick="abrirCarrinho()" style="position:fixed;bottom:2rem;right:2rem;z-index:9998;background:rgba(150,97,12,1);color:white;width:56px;height:56px;border-radius:50%;display:flex;justify-content:center;align-items:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4);transition:transform .2s;">
+  <i class="fa-solid fa-bag-shopping fa-lg"></i>
+  <span id="carrinhoContador" style="position:absolute;top:-4px;right:-4px;background:#6f0000;color:white;font-family:'Mango';font-size:.75rem;width:20px;height:20px;border-radius:50%;display:none;justify-content:center;align-items:center;">0</span>
+</div>
+
+<!-- Toast -->
+<div class="toast-notif" id="toastNotif"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ── Estado ─────────────────────────────────────────────────── */
+let todosDiscos     = [];
+let discosFiltrados = [];
+let paginaAtual     = 1;
+const POR_PAGINA    = 9;
+let filtroAtivo     = 'disponiveis';
+let modoIndisponiveis = false;  // se true, buscou rota autenticada
+
+/* ── Init ───────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  carregarDestaques();
+  carregarCatalogo();
+  initBuscaNavbar();
+});
+
+/* ── Barra de busca do navbar ───────────────────────────────── */
+function initBuscaNavbar() {
+  const btnBusca   = document.getElementById('btnBusca');
+  const barraBusca = document.getElementById('barraBusca');
+  const inputBusca = document.getElementById('buscaNavbar');
+
+  btnBusca.addEventListener('click', (e) => {
+    e.stopPropagation();
+    barraBusca.classList.toggle('visivel');
+    if (barraBusca.classList.contains('visivel')) inputBusca.focus();
+  });
+
+  // Fecha ao clicar fora
+  document.addEventListener('click', (e) => {
+    if (!barraBusca.contains(e.target) && e.target !== btnBusca) {
+      barraBusca.classList.remove('visivel');
+    }
+  });
+
+  // Ao digitar: faz scroll até catálogo e filtra
+  inputBusca.addEventListener('input', () => {
+    const termo = inputBusca.value.trim();
+    if (termo.length > 0) {
+      document.getElementById('catalogue').scrollIntoView({ behavior:'smooth' });
+      document.getElementById('pesquisa').value = termo;
+      pesquisaCatalogo();
+    }
+  });
+
+  // Enter também fecha a barra
+  inputBusca.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      barraBusca.classList.remove('visivel');
+      document.getElementById('catalogue').scrollIntoView({ behavior:'smooth' });
+    }
+  });
+}
+
+/* ── Carrossel ──────────────────────────────────────────────── */
+async function carregarDestaques() {
+  try {
+    const res  = await fetch('/api/public/destaques');
+    const data = await res.json();
+    if (!data.length) return;
+
+    const inner = document.getElementById('carouselInner');
+    inner.innerHTML = '';
+
+    data.forEach((disco, idx) => {
+      const outros = data.filter((_,i) => i !== idx);
+      const esq = outros[0] || disco;
+      const dir = outros[1] || disco;
+
+      const capa    = resolverImagem(disco.imagem);
+      const capaEsq = resolverImagem(esq.imagem);
+      const capaDir = resolverImagem(dir.imagem);
+      const bgText  = disco.album.toUpperCase().replace(/ /g, '<br>');
+
+      const item = document.createElement('div');
+      item.className = 'carousel-item' + (idx === 0 ? ' active' : '');
+      item.dataset.bg = disco.cor_fundo || '#1a1a1a';
+      item.innerHTML = `
+        <div class="carousel-content" style="background:${disco.cor_fundo||'#1a1a1a'};">
+          <h1 class="bg-text">${bgText}</h1>
+          <img src="${capa}" class="disco-principal"
+               onclick='abrirModal(${JSON.stringify(disco)})'
+               alt="${disco.album}">
+          <div class="side-preview left"><img src="${capaEsq}" alt=""></div>
+          <div class="side-preview right"><img src="${capaDir}" alt=""></div>
+        </div>`;
+      inner.appendChild(item);
+    });
+
+    atualizarFundo();
+    document.getElementById('customCarousel')
+      .addEventListener('slid.bs.carousel', atualizarFundo);
+  } catch(e) { console.error('Destaques:', e); }
+}
+
+function atualizarFundo() {
+  const slide = document.querySelector('#customCarousel .carousel-item.active');
+  if (slide) document.getElementById('customCarousel').style.background = slide.dataset.bg || '#111';
+}
+
+/* ── Catálogo ───────────────────────────────────────────────── */
+async function carregarCatalogo() {
+  try {
+    const res = await fetch('/api/public/discos');
+    todosDiscos = await res.json();
+    filtroAtivo = 'disponiveis';
+    modoIndisponiveis = false;
+    aplicarFiltro();
+  } catch(e) {
+    document.getElementById('catalogoGrid').innerHTML =
+      '<p class="erro-msg" style="grid-column:1/-1">Erro ao carregar catálogo.</p>';
+  }
+}
+
+async function filtrarCatalogo(tipo) {
+  filtroAtivo = tipo;
+  paginaAtual = 1;
+  document.getElementById('btnDisponiveis').classList.toggle('ativo', tipo === 'disponiveis');
+  document.getElementById('btnIndisponiveis').classList.toggle('ativo', tipo === 'indisponiveis');
+
+  if (tipo === 'indisponiveis') {
+    // Tenta buscar rota autenticada
+    try {
+      const res = await fetch('/api/discos', { credentials:'include' });
+      if (!res.ok) {
+        mostrarToast('Faça login para ver os indisponíveis.', 'erro');
+        // reverte
+        filtroAtivo = 'disponiveis';
+        document.getElementById('btnDisponiveis').classList.add('ativo');
+        document.getElementById('btnIndisponiveis').classList.remove('ativo');
+        return;
+      }
+      const todos = await res.json();
+      todosDiscos = todos.filter(d => d.status === 'Indisponível');
+      modoIndisponiveis = true;
+    } catch(e) {
+      mostrarToast('Erro ao filtrar.', 'erro');
+      return;
+    }
+  } else {
+    // Volta para disponíveis públicos
+    if (modoIndisponiveis) {
+      await carregarCatalogo();
+      return;
+    }
+  }
+  aplicarFiltro();
+}
+
+function pesquisaCatalogo() {
+  // sincroniza com a barra do navbar
+  const termoCat = document.getElementById('pesquisa').value;
+  if (document.getElementById('buscaNavbar').value !== termoCat) {
+    // não sincroniza de volta para evitar loop
+  }
+  paginaAtual = 1;
+  aplicarFiltro();
+}
+
+function aplicarFiltro() {
+  const termo = (document.getElementById('pesquisa').value || '').toLowerCase();
+  discosFiltrados = todosDiscos.filter(d => {
+    return !termo ||
+      d.album.toLowerCase().includes(termo) ||
+      d.artista.toLowerCase().includes(termo) ||
+      d.generos.toLowerCase().includes(termo);
+  });
+  renderizarCatalogo();
+}
+
+function renderizarCatalogo() {
+  const grid   = document.getElementById('catalogoGrid');
+  const inicio = (paginaAtual - 1) * POR_PAGINA;
+  const slice  = discosFiltrados.slice(inicio, inicio + POR_PAGINA);
+
+  if (slice.length === 0) {
+    grid.innerHTML = '<p class="loading-msg" style="grid-column:1/-1">Nenhum disco encontrado.</p>';
+    document.getElementById('paginaInfo').textContent = '';
+    return;
+  }
+
+  grid.innerHTML = slice.map(d => {
+    const capa   = resolverImagem(d.imagem);
+    const indisp = d.status === 'Indisponível'
+      ? '<span class="badge-indisponivel">Indisponível</span>' : '';
+    return `
+      <div class="disco ${d.status==='Indisponível'?'indisponivel':''}"
+           onclick='abrirModal(${JSON.stringify(d)})'>
+        <div class="info">
+          <h3 class="name">${d.album}</h3>
+          <h4 class="artist">${d.artista}</h4>
+          <p class="genres">${d.generos}</p>
+          ${indisp}
+          <div class="price">
+            <h3 class="preco">R$${parseFloat(d.preco).toFixed(0)}</h3>
+            <div class="icons">
+              <i class="fa-solid fa-headphones fa-xl" style="color:#6f0000;"></i>
+              <i class="fa-solid fa-bag-shopping fa-xl" style="color:#6f0000;"></i>
+            </div>
+          </div>
+        </div>
+        <img class="cover" src="${capa}" alt="${d.album}">
+      </div>`;
+  }).join('');
+
+  const total = Math.ceil(discosFiltrados.length / POR_PAGINA);
+  document.getElementById('paginaInfo').textContent =
+    total > 1 ? `${paginaAtual} / ${total}` : '';
+}
+
+function mudarPagina(dir) {
+  const total = Math.ceil(discosFiltrados.length / POR_PAGINA);
+  paginaAtual = Math.max(1, Math.min(total, paginaAtual + dir));
+  renderizarCatalogo();
+  document.getElementById('catalogue').scrollIntoView({ behavior:'smooth' });
+}
+
+/* ── Modal de álbum ─────────────────────────────────────────── */
+function abrirModal(disco) {
+  discoAtual = disco;  // guarda referência para o carrinho
+  const capa = resolverImagem(disco.imagem);
+  document.getElementById('modalCapa').src              = capa;
+  document.getElementById('modalAlbum').textContent     = disco.album.toUpperCase();
+  document.getElementById('modalArtista').textContent   = 'Artista: ' + disco.artista;
+  document.getElementById('modalGeneros').textContent   = 'Gêneros: ' + disco.generos;
+  document.getElementById('modalStatus').textContent    = 'Status: '  + disco.status;
+  document.getElementById('modalDescricao').textContent = disco.descricao;
+  document.getElementById('modalPreco').textContent     =
+    'R$ ' + parseFloat(disco.preco).toFixed(2).replace('.', ',');
+
+  // Visual diferente para indisponível
+  const btn = document.getElementById('btnCarrinho');
+  if (disco.status === 'Indisponível') {
+    document.querySelector('.modal-content').style.filter  = 'grayscale(60%)';
+    document.querySelector('.modal-content').style.opacity = '0.75';
+    btn.textContent      = 'Indisponível no momento';
+    btn.style.background = '#444';
+    btn.style.cursor     = 'not-allowed';
+    btn.disabled         = true;
+  } else {
+    document.querySelector('.modal-content').style.filter  = 'none';
+    document.querySelector('.modal-content').style.opacity = '1';
+    btn.textContent      = 'Adicionar ao carrinho';
+    btn.style.background = '#b87900';
+    btn.style.cursor     = 'pointer';
+    btn.disabled         = false;
+  }
+
+  document.getElementById('albumModal').classList.add('aberto');
+}
+function fecharModal() {
+  discoAtual = null;
+  document.getElementById('albumModal').classList.remove('aberto');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { fecharModal(); fecharCarrinho(); }
+});
+
+/* ── Contato ─────────────────────────────────────────────────── */
+function enviarContato(e) {
+  e.preventDefault();
+  mostrarToast('Mensagem enviada! Em breve entraremos em contato.', 'sucesso');
+  document.getElementById('formContato').reset();
+}
+
+/* ── Utilitários ─────────────────────────────────────────────── */
+function resolverImagem(imagem) {
+  if (!imagem) return '/assets/img/disco-2.jpg';
+  if (imagem.startsWith('http')) return imagem;
+  if (imagem.includes('/')) return imagem;
+  // lista dos assets originais do projeto
+  const assetNames = ['hole','pumapjl','ashnikko','vegan','alice','yago','fx','djavan',
+    'molchat','dracula','dtmf','mansbff','bracoreso','men','vinil','discos','disco-2',
+    'echoes','favicon','lupa','disco-dash','queen','seta','sort','instagram','twitter',
+    'youtube','facebook','tiktok'];
+  const ehAsset = assetNames.some(n => imagem.toLowerCase().startsWith(n));
+  return ehAsset ? `/assets/img/${imagem}` : `/uploads/${imagem}`;
+}
+
+function mostrarToast(msg, tipo='sucesso') {
+  const t = document.getElementById('toastNotif');
+  t.textContent   = msg;
+  t.className     = `toast-notif ${tipo}`;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 3500);
+}
+
+/* ── CARRINHO ────────────────────────────────────────────────── */
+// Estado do carrinho — array de { id, album, artista, preco, imagem, qtd }
+let carrinho = JSON.parse(localStorage.getItem('echoes_carrinho') || '[]');
+
+// Disco atualmente aberto no modal
+let discoAtual = null;
+
+// Salva no localStorage sempre que o carrinho mudar
+function salvarCarrinho() {
+  localStorage.setItem('echoes_carrinho', JSON.stringify(carrinho));
+}
+
+// Atualiza o contador flutuante
+function atualizarContador() {
+  const total = carrinho.reduce((s, i) => s + i.qtd, 0);
+  const el    = document.getElementById('carrinhoContador');
+  el.textContent    = total;
+  el.style.display  = total > 0 ? 'flex' : 'none';
+}
+
+// Adiciona ou incrementa um disco no carrinho
+function adicionarAoCarrinho() {
+  if (!discoAtual) return;
+  const existente = carrinho.find(i => i.id === discoAtual.id);
+  if (existente) {
+    existente.qtd++;
+  } else {
+    carrinho.push({
+      id:      discoAtual.id,
+      album:   discoAtual.album,
+      artista: discoAtual.artista,
+      preco:   parseFloat(discoAtual.preco),
+      imagem:  discoAtual.imagem,
+      qtd:     1
+    });
+  }
+  salvarCarrinho();
+  atualizarContador();
+  mostrarToast(`"${discoAtual.album}" adicionado ao carrinho! 🛒`, 'sucesso');
+
+  // Animação no botão
+  const btn = document.getElementById('btnCarrinho');
+  btn.textContent = '✓ Adicionado!';
+  btn.style.background = '#155724';
+  setTimeout(() => {
+    btn.textContent = 'Adicionar ao carrinho';
+    btn.style.background = '#b87900';
+  }, 1500);
+}
+
+// Abre o painel lateral do carrinho
+function abrirCarrinho() {
+  renderizarCarrinho();
+  const overlay = document.getElementById('carrinhoOverlay');
+  overlay.style.display = 'flex';
+  // Força reflow para a transição funcionar
+  requestAnimationFrame(() => {
+    document.getElementById('carrinhoPanel').style.transform = 'translateX(0)';
+  });
+}
+
+// Fecha o painel
+function fecharCarrinho() {
+  document.getElementById('carrinhoOverlay').style.display = 'none';
+}
+
+// Renderiza os itens dentro do painel
+function renderizarCarrinho() {
+  const container = document.getElementById('carrinhoItens');
+  const totalEl   = document.getElementById('carrinhoTotal');
+
+  if (carrinho.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:3rem 1rem;color:#666;">
+        <i class="fa-solid fa-bag-shopping fa-3x" style="margin-bottom:1rem;display:block;"></i>
+        <p style="font-family:'Mango';font-size:1.2rem;">Seu carrinho está vazio</p>
+      </div>`;
+    totalEl.textContent = 'R$ 0,00';
+    return;
+  }
+
+  let total = 0;
+  container.innerHTML = carrinho.map(item => {
+    const subtotal = item.preco * item.qtd;
+    total += subtotal;
+    const capa = resolverImagem(item.imagem);
+    return `
+      <div style="display:flex;gap:.8rem;align-items:center;padding:.75rem 0;border-bottom:1px solid rgba(255,246,195,.1);">
+        <img src="${capa}" style="width:56px;height:56px;object-fit:cover;border-radius:3px;flex-shrink:0;">
+        <div style="flex:1;min-width:0;">
+          <p style="font-family:'Mango';font-weight:800;color:#FFF6C3;margin:0;font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.album}</p>
+          <p style="font-family:'Mango';color:#888;margin:0;font-size:.85rem;">${item.artista}</p>
+          <p style="font-family:'Mango';color:rgba(150,97,12,1);margin:0;font-size:.95rem;">R$ ${item.preco.toFixed(2).replace('.',',')}</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:.4rem;flex-shrink:0;">
+          <button onclick="mudarQtd(${item.id},-1)" style="width:26px;height:26px;border-radius:50%;border:1px solid #555;background:transparent;color:white;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">−</button>
+          <span style="font-family:'Mango';color:white;min-width:20px;text-align:center;">${item.qtd}</span>
+          <button onclick="mudarQtd(${item.id},1)" style="width:26px;height:26px;border-radius:50%;border:1px solid #555;background:transparent;color:white;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;">+</button>
+          <button onclick="removerItem(${item.id})" style="width:26px;height:26px;border-radius:50%;border:1px solid #722;background:transparent;color:#f66;cursor:pointer;font-size:.8rem;margin-left:.2rem;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  totalEl.textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
+}
+
+// Aumenta ou diminui quantidade
+function mudarQtd(id, delta) {
+  const item = carrinho.find(i => i.id === id);
+  if (!item) return;
+  item.qtd += delta;
+  if (item.qtd <= 0) {
+    carrinho = carrinho.filter(i => i.id !== id);
+  }
+  salvarCarrinho();
+  atualizarContador();
+  renderizarCarrinho();
+}
+
+// Remove um item
+function removerItem(id) {
+  carrinho = carrinho.filter(i => i.id !== id);
+  salvarCarrinho();
+  atualizarContador();
+  renderizarCarrinho();
+}
+
+// Limpa tudo
+function limparCarrinho() {
+  carrinho = [];
+  salvarCarrinho();
+  atualizarContador();
+  renderizarCarrinho();
+}
+
+// Simula finalização da compra
+function finalizarCompra() {
+  if (carrinho.length === 0) {
+    mostrarToast('Seu carrinho está vazio!', 'erro');
+    return;
+  }
+  const total = carrinho.reduce((s, i) => s + i.preco * i.qtd, 0);
+  const qtd   = carrinho.reduce((s, i) => s + i.qtd, 0);
+  mostrarToast(`Pedido de ${qtd} item(s) — R$ ${total.toFixed(2).replace('.',',')} finalizado! 🎵`, 'sucesso');
+  limparCarrinho();
+  fecharCarrinho();
+}
+
+// Inicializa o contador ao carregar
+atualizarContador();
+</script>
+</body>
+</html>

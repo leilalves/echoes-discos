@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Echoes — Painel Admin</title>
+  <link rel="icon" type="image/x-icon" href="/assets/img/favicon.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    /* Estilos extras exclusivos do dashboard */
+    body { overflow-x: hidden; }
+
+    /* Garante que inputs do Bootstrap dentro de .admin-form fiquem corretos */
+    .admin-form .form-control,
+    .admin-form .form-select {
+      background-color: rgba(0,0,0,.35) !important;
+      border: 1px solid rgba(255,255,255,.25) !important;
+      color: white !important;
+    }
+    .admin-form .form-control::placeholder { color: rgba(255,255,255,.35); }
+    .admin-form .form-control:focus,
+    .admin-form .form-select:focus {
+      background-color: rgba(0,0,0,.5) !important;
+      border-color: rgba(150,97,12,.9) !important;
+      box-shadow: 0 0 0 2px rgba(150,97,12,.3) !important;
+      color: white !important;
+    }
+    .admin-form h4.campo-label {
+      font-family: 'Mango';
+      font-weight: 700;
+      color: white;
+      font-size: 1.25rem;
+      margin-bottom: .4rem;
+    }
+    .admin-form .mb-campo { margin-bottom: 1.1rem; }
+    .form-check-input { background-color: rgba(0,0,0,.3); border-color: rgba(255,255,255,.4); }
+    .form-check-label { color: #ccc; font-family: 'Mango'; }
+  </style>
+</head>
+<body class="body-admin">
+
+<!-- ── CABEÇALHO ─────────────────────────────────────────────── -->
+<div class="div-painel">
+  <h2 class="text-light">
+    <i class="bi bi-disc me-2"></i>Painel de Controle
+  </h2>
+  <div class="d-flex align-items-center gap-3">
+    <a href="/" style="color:#ffe; font-family:'Mango'; font-size:1rem; text-decoration:none;">
+      <i class="bi bi-house me-1"></i>Site
+    </a>
+    <span id="nomeAdmin" style="font-family:'Mango';color:#ffe;font-size:1rem;"></span>
+    <button class="btn-sair" onclick="fazerLogout()">
+      <i class="bi bi-box-arrow-right me-1"></i>Sair
+    </button>
+  </div>
+</div>
+
+<!-- Imagem decorativa centralizada -->
+<div class="text-center">
+  <img src="/assets/img/disco-dash.png" class="img-disco-topo" alt="Disco decorativo">
+</div>
+
+<!-- ── CARDS DE ESTATÍSTICAS ─────────────────────────────────── -->
+<div class="stats-cards" id="statsCards">
+  <div class="stat-card"><div class="stat-numero" id="statTotal">—</div><div class="stat-label">Total de Discos</div></div>
+  <div class="stat-card"><div class="stat-numero" id="statDisp">—</div><div class="stat-label">Disponíveis</div></div>
+  <div class="stat-card"><div class="stat-numero" id="statIndisp">—</div><div class="stat-label">Indisponíveis</div></div>
+  <div class="stat-card"><div class="stat-numero" id="statDest">—</div><div class="stat-label">Em Alta</div></div>
+  <div class="stat-card"><div class="stat-numero" id="statEstoque">—</div><div class="stat-label">Unidades</div></div>
+  <div class="stat-card"><div class="stat-numero" id="statPedidos">—</div><div class="stat-label">Pedidos</div></div>
+</div>
+
+<hr class="divisor-admin">
+
+<!-- ── SEÇÃO: ADICIONAR DISCO ─────────────────────────────────── -->
+<div class="adiciona-titulo">
+  <h2><i class="bi bi-plus-circle me-2"></i>Adicionar Novo Disco</h2>
+</div>
+
+<!-- FORMULÁRIO — classe admin-form garante escopo CSS correto -->
+<div class="admin-form px-3 px-md-4" id="formArea">
+  <div class="row g-3 mt-1">
+
+    <!-- Álbum -->
+    <div class="col-12 col-sm-6 mb-campo">
+      <h4 class="campo-label">Álbum *</h4>
+      <input type="text" class="form-control" id="addAlbum" placeholder="Nome do álbum">
+    </div>
+    <!-- Preço -->
+    <div class="col-12 col-sm-6 mb-campo">
+      <h4 class="campo-label">Preço (R$) *</h4>
+      <input type="number" class="form-control" id="addPreco" placeholder="Ex: 170.00" step="0.01" min="0">
+    </div>
+
+    <!-- Artista -->
+    <div class="col-12 col-sm-6 mb-campo">
+      <h4 class="campo-label">Artista *</h4>
+      <input type="text" class="form-control" id="addArtista" placeholder="Nome do artista">
+    </div>
+    <!-- Quantidade -->
+    <div class="col-12 col-sm-6 mb-campo">
+      <h4 class="campo-label">Quantidade em Estoque</h4>
+      <input type="number" class="form-control" id="addQuantidade" placeholder="Ex: 30" min="0" value="0">
+    </div>
+
+    <!-- Gêneros -->
+    <div class="col-12 col-sm-6 mb-campo">
+      <h4 class="campo-label">Gêneros *</h4>
+      <input type="text" class="form-control" id="addGeneros" placeholder="Ex: grunge/alt rock">
+    </div>
+    <!-- Status -->
+    <div class="col-12 col-sm-6 mb-campo">
+      <h4 class="campo-label">Status *</h4>
+      <select class="form-select" id="addStatus">
+        <option value="Disponível">Disponível</option>
+        <option value="Indisponível">Indisponível</option>
+      </select>
+    </div>
+
+    <!-- Descrição (largura total) -->
+    <div class="col-12 mb-campo">
+      <h4 class="campo-label">Descrição *</h4>
+      <textarea class="form-control" id="addDescricao" rows="3"
+                placeholder="Escreva sobre o álbum…"
+                style="background:rgba(0,0,0,.35);color:white;border:1px solid rgba(255,255,255,.25);"></textarea>
+    </div>
+
+    <!-- Capa upload/URL -->
+    <div class="col-12 col-sm-6 mb-campo">
+      <h4 class="campo-label">Capa (upload)</h4>
+      <input type="file" class="form-control" id="addImagem" accept="image/*">
+      <small class="text-muted d-block mt-1">Ou cole uma URL de imagem:</small>
+      <input type="text" class="form-control mt-1" id="addImagemUrl" placeholder="https://…">
+    </div>
+
+    <!-- Destaque + Cor -->
+    <div class="col-12 col-sm-6 mb-campo">
+      <h4 class="campo-label">Destaque (Em Alta)</h4>
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" id="addDestaque">
+        <label class="form-check-label" for="addDestaque">
+          Exibir no carrossel "Em Alta"
+        </label>
+      </div>
+      <h4 class="campo-label">Cor do Carrossel</h4>
+      <input type="color" class="form-control form-control-color w-100"
+             id="addCorFundo" value="#1a1a1a" title="Cor de fundo do slide">
+    </div>
+
+  </div><!-- /row -->
+
+  <!-- Mensagem de erro do formulário -->
+  <p id="addErro" class="text-danger text-center mt-1" style="display:none;font-family:'Mango';font-size:1rem;"></p>
+
+  <!-- Botão Cadastrar -->
+  <button class="btn-cadastrar-disco" onclick="adicionarDisco()">
+    <i class="bi bi-disc fs-5"></i>
+    Cadastrar novo disco
+    <i class="bi bi-arrow-right fs-5"></i>
+  </button>
+
+</div><!-- /admin-form -->
+
+<hr class="divisor-admin">
+
+<!-- ── BIBLIOTECA DE DISCOS ───────────────────────────────────── -->
+<div class="secao-titulo-admin">
+  <h2><i class="bi bi-collection me-2"></i>Biblioteca de Discos</h2>
+</div>
+
+<div class="tabela-discos-container mt-2">
+  <table class="tabela-discos" id="tabelaDiscos">
+    <thead>
+      <tr>
+        <th>Capa</th>
+        <th>Álbum</th>
+        <th>Artista</th>
+        <th class="d-none d-md-table-cell">Gêneros</th>
+        <th>Preço</th>
+        <th>Estoque</th>
+        <th>Status</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="tabelaBody">
+      <tr><td colspan="8" class="text-center p-4" style="color:#888;">Carregando…</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<hr class="divisor-admin">
+
+<!-- ── ESTOQUE ────────────────────────────────────────────────── -->
+<div class="secao-titulo-admin">
+  <h2><i class="bi bi-boxes me-2"></i>Estoque da Loja</h2>
+</div>
+
+<div class="estoque-container">
+  <button class="btn-lista" onclick="abrirLista('listaEstoque','iconeEstoque')">
+    <span>Em Estoque</span>
+    <i id="iconeEstoque" class="bi bi-chevron-down"></i>
+  </button>
+  <ul id="listaEstoque" class="lista-discos"></ul>
+
+  <button class="btn-lista" onclick="abrirLista('listaFalta','iconeFalta')">
+    <span>Em Falta (estoque = 0)</span>
+    <i id="iconeFalta" class="bi bi-chevron-down"></i>
+  </button>
+  <ul id="listaFalta" class="lista-discos"></ul>
+</div>
+
+<hr class="divisor-admin">
+
+<!-- ── HISTÓRICO DE PEDIDOS ───────────────────────────────────── -->
+<div class="secao-titulo-admin">
+  <h2><i class="bi bi-bag me-2"></i>Histórico de Compras</h2>
+</div>
+<div id="pedidosContainer" class="pb-5">
+  <p class="loading-msg">Carregando pedidos…</p>
+</div>
+
+<!-- ── MODAL DE EDIÇÃO ───────────────────────────────────────── -->
+<div class="modal-admin-overlay" id="modalEditarOverlay">
+  <div class="modal-admin-box">
+    <h3><i class="bi bi-pencil-square me-2"></i>Editar Disco</h3>
+    <input type="hidden" id="editId">
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+      <div>
+        <label>Álbum *</label>
+        <input type="text" id="editAlbum" placeholder="Nome do álbum">
+      </div>
+      <div>
+        <label>Artista *</label>
+        <input type="text" id="editArtista" placeholder="Artista">
+      </div>
+      <div>
+        <label>Gêneros *</label>
+        <input type="text" id="editGeneros" placeholder="Ex: grunge/alt rock">
+      </div>
+      <div>
+        <label>Status *</label>
+        <select id="editStatus">
+          <option value="Disponível">Disponível</option>
+          <option value="Indisponível">Indisponível</option>
+        </select>
+      </div>
+      <div>
+        <label>Preço (R$) *</label>
+        <input type="number" id="editPreco" step="0.01" min="0">
+      </div>
+      <div>
+        <label>Quantidade *</label>
+        <input type="number" id="editQuantidade" min="0">
+      </div>
+    </div>
+
+    <label>Descrição *</label>
+    <textarea id="editDescricao" rows="3"></textarea>
+
+    <label>Nova Capa (upload)</label>
+    <input type="file" id="editImagem" accept="image/*">
+    <label>Ou URL da imagem (deixe vazio para manter)</label>
+    <input type="text" id="editImagemUrl" placeholder="https://…">
+
+    <div style="display:flex;gap:1rem;align-items:center;margin-bottom:.75rem;">
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <label style="margin:0;">Destaque</label>
+        <input type="checkbox" id="editDestaque" style="width:1.1rem;height:1.1rem;cursor:pointer;">
+      </div>
+      <div style="flex:1;">
+        <label>Cor do Carrossel</label>
+        <input type="color" id="editCorFundo">
+      </div>
+    </div>
+
+    <p id="editErro" style="color:#f66;font-family:'Mango';display:none;font-size:.95rem;"></p>
+    <div>
+      <button class="btn-salvar" onclick="salvarEdicao()">
+        <i class="bi bi-check-lg me-1"></i>Salvar
+      </button>
+      <button class="btn-cancelar" onclick="fecharModalEditar()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL CONFIRMAR EXCLUSÃO ──────────────────────────────── -->
+<div class="modal-admin-overlay" id="modalDeletarOverlay">
+  <div class="modal-admin-box" style="max-width:380px;text-align:center;">
+    <h3 style="color:#f66;">⚠️ Confirmar Exclusão</h3>
+    <p id="deletarNome" style="color:#ccc;font-family:'Mango';font-size:1.1rem;"></p>
+    <p style="color:#999;font-family:'Mango';font-size:.9rem;">Esta ação não pode ser desfeita.</p>
+    <input type="hidden" id="deletarId">
+    <button class="btn-salvar" style="background:#dc3545;" onclick="confirmarDeletar()">
+      <i class="bi bi-trash me-1"></i>Excluir
+    </button>
+    <button class="btn-cancelar" onclick="fecharModalDeletar()">Cancelar</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-notif" id="toastNotif"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ── Init ────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', async () => {
+  await verificarAdmin();
+  carregarEstatisticas();
+  carregarTabela();
+  carregarPedidos();
+});
+
+/* ── Verificação de sessão ───────────────────────────────────── */
+async function verificarAdmin() {
+  try {
+    const res  = await fetch('/api/sessao', { credentials:'include' });
+    const data = await res.json();
+    if (!data.success || data.user.role !== 'admin') {
+      window.location.href = '/login';
+      return;
+    }
+    document.getElementById('nomeAdmin').textContent = '👤 ' + data.user.username;
+  } catch(_) { window.location.href = '/login'; }
+}
+
+/* ── Logout ──────────────────────────────────────────────────── */
+async function fazerLogout() {
+  await fetch('/api/logout', { method:'POST', credentials:'include' });
+  window.location.href = '/login';
+}
+
+/* ── Estatísticas ────────────────────────────────────────────── */
+async function carregarEstatisticas() {
+  try {
+    const [sd, sp] = await Promise.all([
+      fetch('/api/admin/estatisticas', { credentials:'include' }).then(r => r.json()),
+      fetch('/api/admin/pedidos/stats', { credentials:'include' }).then(r => r.json())
+    ]);
+    document.getElementById('statTotal').textContent   = sd.total;
+    document.getElementById('statDisp').textContent    = sd.disponiveis;
+    document.getElementById('statIndisp').textContent  = sd.indisponiveis;
+    document.getElementById('statDest').textContent    = sd.destaques;
+    document.getElementById('statEstoque').textContent = sd.estoque;
+    document.getElementById('statPedidos').textContent = sp.totalPedidos;
+  } catch(e) { console.error('Stats:', e); }
+}
+
+/* ── Tabela de discos ────────────────────────────────────────── */
+async function carregarTabela() {
+  const tbody = document.getElementById('tabelaBody');
+  try {
+    const res    = await fetch('/api/discos', { credentials:'include' });
+    const discos = await res.json();
+
+    if (!discos.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="text-center p-4" style="color:#888;">Nenhum disco cadastrado.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = discos.map(d => {
+      const capa  = resolverImagem(d.imagem);
+      const badge = d.status === 'Disponível'
+        ? '<span class="badge-status badge-disponivel">Disponível</span>'
+        : '<span class="badge-status badge-indisponivel">Indisponível</span>';
+      const dest  = d.destaque ? '<span class="badge-destaque ms-1">⭐</span>' : '';
+      return `<tr>
+        <td><img src="${capa}" class="capa-mini" alt="${d.album}"></td>
+        <td><strong>${d.album}</strong>${dest}</td>
+        <td>${d.artista}</td>
+        <td class="d-none d-md-table-cell" style="font-size:.8rem;color:#aaa;">${d.generos}</td>
+        <td>R$${parseFloat(d.preco).toFixed(2).replace('.',',')}</td>
+        <td>${d.quantidade}</td>
+        <td>${badge}</td>
+        <td style="white-space:nowrap;">
+          <button class="btn-acao btn-editar"  onclick="abrirModalEditar(${d.id})" title="Editar">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn-acao btn-status"  onclick="alterarStatus(${d.id})" title="Alternar status">
+            <i class="bi bi-eye${d.status==='Disponível'?'':'-slash'}"></i>
+          </button>
+          <button class="btn-acao btn-deletar" onclick="abrirModalDeletar(${d.id},'${d.album.replace(/'/g,"\\'")}')">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    preencherListasEstoque(discos);
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-danger p-3">Erro ao carregar discos.</td></tr>';
+  }
+}
+
+function preencherListasEstoque(discos) {
+  const emEstoque  = discos.filter(d => d.quantidade > 0);
+  const semEstoque = discos.filter(d => d.quantidade === 0);
+
+  document.getElementById('listaEstoque').innerHTML = emEstoque.length
+    ? emEstoque.map(d => `<li><span>●</span>${d.album} — ${d.artista}<strong>${d.quantidade} un.</strong></li>`).join('')
+    : '<li style="color:#aaa;">Nenhum disco em estoque.</li>';
+
+  document.getElementById('listaFalta').innerHTML = semEstoque.length
+    ? semEstoque.map(d => `<li><span>●</span>${d.album} — ${d.artista}<strong>0</strong></li>`).join('')
+    : '<li style="color:#aaa;">Todos os discos têm estoque.</li>';
+}
+
+/* ── Adicionar disco ─────────────────────────────────────────── */
+async function adicionarDisco() {
+  const erroEl = document.getElementById('addErro');
+  erroEl.style.display = 'none';
+
+  // Lê valores — usa .value diretamente (sem trim em número)
+  const album     = document.getElementById('addAlbum').value.trim();
+  const artista   = document.getElementById('addArtista').value.trim();
+  const generos   = document.getElementById('addGeneros').value.trim();
+  const descricao = document.getElementById('addDescricao').value.trim();
+  const preco     = document.getElementById('addPreco').value.trim();
+  const quantidade= document.getElementById('addQuantidade').value || '0';
+  const status    = document.getElementById('addStatus').value;
+  const imagemUrl = document.getElementById('addImagemUrl').value.trim();
+  const destaque  = document.getElementById('addDestaque').checked ? '1' : '0';
+  const corFundo  = document.getElementById('addCorFundo').value;
+  const fileInput = document.getElementById('addImagem');
+
+  // Validação explícita com mensagem detalhada
+  const faltando = [];
+  if (!album)     faltando.push('Álbum');
+  if (!artista)   faltando.push('Artista');
+  if (!generos)   faltando.push('Gêneros');
+  if (!descricao) faltando.push('Descrição');
+  if (!preco)     faltando.push('Preço');
+
+  if (faltando.length > 0) {
+    erroEl.textContent   = 'Preencha: ' + faltando.join(', ') + '.';
+    erroEl.style.display = 'block';
+    // Scroll suave até o erro
+    erroEl.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+  if (Number(preco) < 0) {
+    erroEl.textContent = 'O preço não pode ser negativo.';
+    erroEl.style.display = 'block';
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('album',      album);
+  formData.append('artista',    artista);
+  formData.append('generos',    generos);
+  formData.append('descricao',  descricao);
+  formData.append('preco',      preco);
+  formData.append('quantidade', quantidade);
+  formData.append('status',     status);
+  formData.append('imagemUrl',  imagemUrl);
+  formData.append('destaque',   destaque);
+  formData.append('cor_fundo',  corFundo);
+  if (fileInput.files[0]) formData.append('imagem', fileInput.files[0]);
+
+  try {
+    const res  = await fetch('/api/discos', {
+      method:'POST', credentials:'include', body: formData
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      mostrarToast('Disco cadastrado com sucesso! 🎵', 'sucesso');
+      // Limpa formulário manualmente (evita reset de color picker)
+      document.getElementById('addAlbum').value     = '';
+      document.getElementById('addArtista').value   = '';
+      document.getElementById('addGeneros').value   = '';
+      document.getElementById('addDescricao').value = '';
+      document.getElementById('addPreco').value     = '';
+      document.getElementById('addQuantidade').value= '0';
+      document.getElementById('addStatus').value    = 'Disponível';
+      document.getElementById('addImagem').value    = '';
+      document.getElementById('addImagemUrl').value = '';
+      document.getElementById('addDestaque').checked= false;
+      document.getElementById('addCorFundo').value  = '#1a1a1a';
+      carregarTabela();
+      carregarEstatisticas();
+    } else {
+      erroEl.textContent   = data.erro || 'Erro ao cadastrar.';
+      erroEl.style.display = 'block';
+    }
+  } catch(e) {
+    erroEl.textContent   = 'Erro de conexão com o servidor.';
+    erroEl.style.display = 'block';
+  }
+}
+
+/* ── Alternar status ─────────────────────────────────────────── */
+async function alterarStatus(id) {
+  try {
+    const res  = await fetch(`/api/discos/${id}/status`, { method:'PUT', credentials:'include' });
+    const data = await res.json();
+    if (res.ok) {
+      mostrarToast(data.mensagem, 'sucesso');
+      carregarTabela();
+      carregarEstatisticas();
+    } else {
+      mostrarToast(data.erro || 'Erro.', 'erro');
+    }
+  } catch(e) { mostrarToast('Erro de conexão.', 'erro'); }
+}
+
+/* ── Editar ──────────────────────────────────────────────────── */
+async function abrirModalEditar(id) {
+  try {
+    const res = await fetch(`/api/discos/${id}`, { credentials:'include' });
+    const d   = await res.json();
+
+    document.getElementById('editId').value        = d.id;
+    document.getElementById('editAlbum').value     = d.album;
+    document.getElementById('editArtista').value   = d.artista;
+    document.getElementById('editGeneros').value   = d.generos;
+    document.getElementById('editDescricao').value = d.descricao;
+    document.getElementById('editPreco').value     = d.preco;
+    document.getElementById('editQuantidade').value= d.quantidade;
+    document.getElementById('editStatus').value    = d.status;
+    document.getElementById('editDestaque').checked= !!d.destaque;
+    document.getElementById('editCorFundo').value  = d.cor_fundo || '#1a1a1a';
+    document.getElementById('editImagemUrl').value = '';
+    document.getElementById('editImagem').value    = '';
+    document.getElementById('editErro').style.display = 'none';
+    document.getElementById('modalEditarOverlay').classList.add('aberto');
+  } catch(e) { mostrarToast('Erro ao carregar disco.', 'erro'); }
+}
+function fecharModalEditar() {
+  document.getElementById('modalEditarOverlay').classList.remove('aberto');
+}
+
+async function salvarEdicao() {
+  const erroEl    = document.getElementById('editErro');
+  erroEl.style.display = 'none';
+
+  const id        = document.getElementById('editId').value;
+  const album     = document.getElementById('editAlbum').value.trim();
+  const artista   = document.getElementById('editArtista').value.trim();
+  const generos   = document.getElementById('editGeneros').value.trim();
+  const descricao = document.getElementById('editDescricao').value.trim();
+  const preco     = document.getElementById('editPreco').value.trim();
+  const quantidade= document.getElementById('editQuantidade').value || '0';
+  const status    = document.getElementById('editStatus').value;
+  const imagemUrl = document.getElementById('editImagemUrl').value.trim();
+  const destaque  = document.getElementById('editDestaque').checked ? '1' : '0';
+  const corFundo  = document.getElementById('editCorFundo').value;
+  const fileInput = document.getElementById('editImagem');
+
+  if (!album || !artista || !generos || !descricao || !preco) {
+    erroEl.textContent   = 'Preencha todos os campos obrigatórios.';
+    erroEl.style.display = 'block';
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('album',      album);
+  formData.append('artista',    artista);
+  formData.append('generos',    generos);
+  formData.append('descricao',  descricao);
+  formData.append('preco',      preco);
+  formData.append('quantidade', quantidade);
+  formData.append('status',     status);
+  formData.append('imagemUrl',  imagemUrl);
+  formData.append('destaque',   destaque);
+  formData.append('cor_fundo',  corFundo);
+  if (fileInput.files[0]) formData.append('imagem', fileInput.files[0]);
+
+  try {
+    const res  = await fetch(`/api/discos/${id}`, { method:'PUT', credentials:'include', body:formData });
+    const data = await res.json();
+    if (res.ok) {
+      mostrarToast('Disco atualizado! ✅', 'sucesso');
+      fecharModalEditar();
+      carregarTabela();
+      carregarEstatisticas();
+    } else {
+      erroEl.textContent   = data.erro || 'Erro ao atualizar.';
+      erroEl.style.display = 'block';
+    }
+  } catch(e) {
+    erroEl.textContent   = 'Erro de conexão.';
+    erroEl.style.display = 'block';
+  }
+}
+
+/* ── Deletar ─────────────────────────────────────────────────── */
+function abrirModalDeletar(id, nome) {
+  document.getElementById('deletarId').value          = id;
+  document.getElementById('deletarNome').textContent  = `"${nome}"`;
+  document.getElementById('modalDeletarOverlay').classList.add('aberto');
+}
+function fecharModalDeletar() {
+  document.getElementById('modalDeletarOverlay').classList.remove('aberto');
+}
+async function confirmarDeletar() {
+  const id = document.getElementById('deletarId').value;
+  try {
+    const res  = await fetch(`/api/discos/${id}`, { method:'DELETE', credentials:'include' });
+    const data = await res.json();
+    if (res.ok) {
+      mostrarToast('Disco removido.', 'sucesso');
+      fecharModalDeletar();
+      carregarTabela();
+      carregarEstatisticas();
+    } else {
+      mostrarToast(data.erro || 'Erro ao remover.', 'erro');
+    }
+  } catch(e) { mostrarToast('Erro de conexão.', 'erro'); }
+}
+
+/* ── Pedidos ─────────────────────────────────────────────────── */
+async function carregarPedidos() {
+  const container = document.getElementById('pedidosContainer');
+  try {
+    const res     = await fetch('/api/admin/pedidos', { credentials:'include' });
+    const pedidos = await res.json();
+
+    if (!pedidos.length) {
+      container.innerHTML = '<p class="loading-msg">Nenhum pedido registrado.</p>';
+      return;
+    }
+
+    const cores = ['bg-cliente','bg-cliente2'];
+    container.innerHTML = pedidos.map((p, i) => {
+      const data  = new Date(p.criado_em).toLocaleDateString('pt-BR');
+      const cor   = cores[i % 2];
+      const itens = (p.itens||[]).map(it =>
+        `<div class="d-flex justify-content-between align-items-center px-3 py-1" style="font-family:'Mango';font-size:.95rem;">
+           <span class="text-white">${it.album} — ${it.artista} ×${it.quantidade}</span>
+           <span class="text-white">R$${parseFloat(it.preco_unit*it.quantidade).toFixed(2).replace('.',',')}</span>
+         </div>`
+      ).join('');
+      return `
+        <div class="card-historico">
+          <div class="cliente-tag ${cor}">
+            <span class="text-light fw-bold">${p.cliente}</span>
+            <span class="text-light ms-2" style="font-size:.85rem;">· ${data}</span>
+            <span class="ms-auto text-light">Total: R$${parseFloat(p.total).toFixed(2).replace('.',',')}</span>
+          </div>
+          ${itens}
+        </div>`;
+    }).join('');
+  } catch(e) {
+    container.innerHTML = '<p class="erro-msg">Erro ao carregar pedidos.</p>';
+  }
+}
+
+/* ── Toggle listas de estoque ────────────────────────────────── */
+function abrirLista(idLista, idIcone) {
+  const lista  = document.getElementById(idLista);
+  const icone  = document.getElementById(idIcone);
+  const aberto = lista.style.display === 'block';
+  lista.style.display = aberto ? 'none' : 'block';
+  icone.className     = aberto ? 'bi bi-chevron-down' : 'bi bi-chevron-up';
+}
+
+/* ── ESC fecha modais ────────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { fecharModalEditar(); fecharModalDeletar(); }
+});
+
+/* ── Utilitários ─────────────────────────────────────────────── */
+function resolverImagem(imagem) {
+  if (!imagem) return '/assets/img/disco-2.jpg';
+  if (imagem.startsWith('http')) return imagem;
+  if (imagem.includes('/')) return imagem;
+  const assets = ['hole','pumapjl','ashnikko','vegan','alice','yago','fx','djavan',
+    'molchat','dracula','dtmf','mansbff','bracoreso','men','vinil','discos','disco-2',
+    'echoes','favicon','lupa','disco-dash','queen','seta','sort','instagram','twitter',
+    'youtube','facebook','tiktok'];
+  return assets.some(n => imagem.toLowerCase().startsWith(n))
+    ? `/assets/img/${imagem}` : `/uploads/${imagem}`;
+}
+
+function mostrarToast(msg, tipo='sucesso') {
+  const t = document.getElementById('toastNotif');
+  t.textContent   = msg;
+  t.className     = `toast-notif ${tipo}`;
+  t.style.display = 'block';
+  setTimeout(() => { t.style.display = 'none'; }, 3500);
+}
+</script>
+</body>
+</html>
