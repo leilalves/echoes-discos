@@ -1,33 +1,19 @@
--- ============================================================
--- ECHOES DISCOS — Script de criação do banco de dados
--- Execute este arquivo no MySQL Workbench antes de tudo.
--- ============================================================
-
--- Remove o banco se já existir (útil para recriar do zero)
 DROP DATABASE IF EXISTS echoes_db;
 
--- Cria o banco com suporte completo a UTF-8 (acentos, emojis, etc.)
 CREATE DATABASE echoes_db
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
 USE echoes_db;
 
--- ============================================================
--- TABELA DE USUÁRIOS
--- role: 'admin' (controle total) ou 'usuario' (só visualiza)
--- ============================================================
 CREATE TABLE IF NOT EXISTS usuarios (
     id         INT AUTO_INCREMENT PRIMARY KEY,
     username   VARCHAR(50)  NOT NULL UNIQUE,
-    password   VARCHAR(255) NOT NULL,           -- senha armazenada como hash bcrypt
+    password   VARCHAR(255) NOT NULL,
     role       ENUM('admin','usuario') NOT NULL,
     criado_em  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================================
--- TABELA DE DISCOS
--- ============================================================
 CREATE TABLE IF NOT EXISTS discos (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     album       VARCHAR(150)  NOT NULL,
@@ -43,9 +29,6 @@ CREATE TABLE IF NOT EXISTS discos (
     criado_em   TIMESTAMP     DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================================
--- TABELA DE PEDIDOS (histórico de compras)
--- ============================================================
 CREATE TABLE IF NOT EXISTS pedidos (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     cliente     VARCHAR(100) NOT NULL,
@@ -54,9 +37,6 @@ CREATE TABLE IF NOT EXISTS pedidos (
     criado_em   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================================
--- TABELA DE ITENS DO PEDIDO
--- ============================================================
 CREATE TABLE IF NOT EXISTS pedido_itens (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     pedido_id   INT          NOT NULL,
@@ -67,10 +47,6 @@ CREATE TABLE IF NOT EXISTS pedido_itens (
     FOREIGN KEY (disco_id)  REFERENCES discos(id)  ON DELETE RESTRICT
 );
 
--- ============================================================
--- DADOS INICIAIS — 9 discos originais do catálogo
--- As imagens correspondem aos arquivos em assets/img/
--- ============================================================
 INSERT INTO discos (album, artista, generos, descricao, preco, quantidade, status, imagem, destaque, cor_fundo) VALUES
   ('Live Through This', 'Hole',           'grunge/alt rock/punk rock',
    'Álbum icônico de 1994 que consolidou Hole como uma das bandas mais impactantes do grunge. Com letras brutas e emotivas de Courtney Love, o disco explora temas de trauma, identidade e sobrevivência de forma visceral.',
@@ -92,32 +68,29 @@ INSERT INTO discos (album, artista, generos, descricao, preco, quantidade, statu
    'EP acústico lançado em 1994 que mostrou um lado mais reflexivo e melancólico do Alice in Chains. "Would?" e "Nutshell" tornaram-se hinos geracionais sobre perda, vício e beleza efêmera.',
    290.00, 15, 'Disponível', 'alice.png',    1, '#0d1a00'),
 
-  ('OPROPRIO',          'Yago Oproprio',  'hip-hop/mpb/r&b/boom-bap',
+  ('OPROPRIO', 'Yago Oproprio',  'hip-hop/mpb/r&b/boom-bap',
    'Obra-prima do rapper carioca Yago Oproprio, onde MPB, R&B e hip-hop se encontram em letras densas sobre identidade negra, amor e pertencimento. Considerado um divisor de águas no rap brasileiro.',
    410.00, 12, 'Disponível', 'yago.png',     1, '#1a0d00'),
 
-  ('Red Light',         'f(x)',           'k-pop/dance/electropop/hip-hop',
+  ('Red Light', 'f(x)', 'k-pop/dance/electropop/hip-hop',
    'Terceiro álbum do grupo sul-coreano f(x), aclamado pela crítica como um dos mais inovadores do K-pop. Sonoridade experimental que mistura synth-pop, eletrônico e hip-hop com uma estética artsy única.',
    230.00, 22, 'Disponível', 'fx.png',       0, '#1a001a'),
 
-  ('Luz',               'Djavan',         'mpb/soul/funk/pop/jazz/regional',
+  ('Luz', 'Djavan', 'mpb/soul/funk/pop/jazz/regional',
    'Um dos álbuns mais importantes da MPB, lançado em 1982. Djavan apresenta composições sofisticadas que transitam entre o nordeste brasileiro e influências internacionais de soul e jazz, criando sua sonoridade inconfundível.',
    200.00, 45, 'Disponível', 'djavan.png',   0, '#1a1000'),
 
-  ('Etazhi',            'Molchat Doma',   'synth pop/dark wave/new wave',
+  ('Etazhi', 'Molchat Doma', 'synth pop/dark wave/new wave',
    'Segundo álbum da banda bielorrussa Molchat Doma, que se tornou viral por capturar o espírito melancólico do pós-soviético. Letras em russo sobre alienação urbana com uma trilha sonora de darkwave densa e hipnótica.',
    250.00, 38, 'Disponível', 'molchat.png',  1, '#003459');
-
--- ============================================================
--- DADOS INICIAIS — pedidos de exemplo (histórico)
--- ============================================================
-INSERT INTO pedidos (cliente, email, total, criado_em) VALUES
-  ('Maria',   'maria@email.com',   270.00, '2026-04-16 14:30:00'),
-  ('Gabriel', 'gabriel@email.com', 550.00, '2026-02-01 11:15:00'),
-  ('Alice',   'alice@email.com',   290.00, '2026-01-29 09:45:00');
-
-INSERT INTO pedido_itens (pedido_id, disco_id, quantidade, preco_unit) VALUES
-  (1, 3, 1, 270.00),  -- Maria comprou WEEDKILLER
-  (2, 2, 1, 140.00),  -- Gabriel comprou pumapjl
-  (2, 6, 1, 410.00),  -- Gabriel comprou OPROPRIO
-  (3, 5, 1, 290.00);  -- Alice comprou Jar of Flies
+   
+   INSERT INTO pedidos (cliente, email, total, criado_em) VALUES
+  ('Yves',   'yves@email.com',   270.00, '2026-04-16 14:30:00'),
+  ('Gabrielli', 'gabrielli@email.com', 550.00, '2026-02-01 11:15:00'),
+  ('Layne',   'layne@email.com',   290.00, '2026-01-29 09:45:00');
+  
+  INSERT INTO pedido_itens (pedido_id, disco_id, quantidade, preco_unit) VALUES
+  (1, 3, 1, 270.00),
+  (2, 2, 1, 140.00),
+  (2, 6, 1, 410.00),
+  (3, 5, 1, 290.00); 

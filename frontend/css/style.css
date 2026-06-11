@@ -1,4 +1,4 @@
-/* ============================================================
+b86229/* ============================================================
    style.css — Echoes Discos  (revisão completa v2)
    ============================================================ */
 
@@ -19,6 +19,7 @@
   --vermelho-fonte: #6F0000;
   --amarelo:        #AB6900;
   --amarelo-hover:  #593700;
+  --laranja-mobile: #fccc97
 }
 
 /* ── RESET BÁSICO ────────────────────────────────────────────── */
@@ -28,14 +29,17 @@ body { margin: 0; padding: 0; overflow-x: hidden; }
 
 /* ── NAVBAR ──────────────────────────────────────────────────── */
 .navbar.navbar-expand-lg {
-  background-color: var(--bege);
+  background-color: transparent;
   position: relative;
   z-index: 200;                 /* acima da imagem hero */
+  margin-top:  -70px;
+  padding-bottom: -2rem;
 }
 .collapse.navbar-collapse {
   background-color: var(--bege);
   justify-content: center;
   padding-left: 7rem;
+  padding-bottom: 5rem;
 }
 .nav-link {
   color: var(--amarelo) !important;
@@ -59,12 +63,13 @@ body { margin: 0; padding: 0; overflow-x: hidden; }
   text-decoration: none;
   transition: color .2s;
 }
+
 .navbar .nav-icon:hover { color: var(--amarelo-hover); }
 
 /* Caixa de pesquisa — oculta por padrão, aparece ao clicar na lupa */
 #barraBusca {
   display: none;
-  position: absolute;
+  position:static;
   top: 100%;
   right: 1rem;
   background: var(--bege);
@@ -84,10 +89,14 @@ body { margin: 0; padding: 0; overflow-x: hidden; }
 }
 #barraBusca.visivel { display: block; }
 
+.nav-icons {
+  align-items: flex-end;
+}
+
 /* ── HERO ────────────────────────────────────────────────────── */
 .hero {
   min-height: 100vh;
-  background: linear-gradient(#FFF6C3 85%, #320D01);
+  background-color: var(--bege);
   display: flex;
   position: relative;
   flex-direction: column;
@@ -95,38 +104,58 @@ body { margin: 0; padding: 0; overflow-x: hidden; }
   overflow: hidden;
 }
 
-/* Imagem do braço — ATRÁS do conteúdo */
 .arm {
   bottom: 0;
   right: 0;
-  z-index: 1;          /* atrás de títulos e botão */
   position: absolute;
   pointer-events: none;
 }
-.arm-vinyl { width: 73rem; max-width: 90vw; }
+.arm-vinyl { 
+  width: 65rem; 
+  height: 32rem;
+  max-width: 90vw; 
+}
 
-/* Título e botão ficam NA FRENTE da imagem */
 .title {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   color: var(--vermelho-fonte);
   width: 100%;
-  margin-bottom: 0;       /* sem sobreposição negativa */
+  margin-bottom: 0;
   position: relative;
-  z-index: 2;
+  padding-top: -40rem;
 }
-.echoes { font-family:'Mango'; font-weight:700; font-size:20rem; line-height:1; color:transparent; -webkit-text-stroke:2.5px #fff; filter:drop-shadow(0 0 40px rgba(111,0,0,1)) drop-shadow(0 0 80px rgba(111,0,0,.7)); }
-.discos { font-family:'Mango'; font-weight:700; font-size:20rem; margin-left:auto; line-height:1; color:transparent; -webkit-text-stroke:2.5px #fff; filter:drop-shadow(0 0 40px rgba(111,0,0,1)) drop-shadow(0 0 80px rgba(111,0,0,.7)); }
-.desc { font-family:'Mango'; font-weight:600; font-size:2.3rem; margin-left:auto; color:#AB6900; text-shadow:0 1px 6px rgba(0,0,0,.5); }
+.echoes {
+   font-family:'Mango'; 
+   font-weight: 700; 
+   font-size: 20rem; 
+   line-height:1; 
+   color: var(--vermelho-fonte);
+  }
 
-/* Wrapper que empurra o botão para a DIREITA */
+.discos { 
+  font-family:'Mango'; 
+  font-weight:700; 
+  font-size:20rem; 
+  margin-left:auto; 
+  line-height:1; 
+}
+
+.desc { 
+  font-family:'Mango'; 
+  font-weight:600; 
+  font-size:2.3rem; 
+  margin-left:auto; 
+  color:#AB6900; 
+  text-shadow:0 1px 6px rgba(0,0,0,0); }
+
+
 .hero-btn-wrapper {
   display: flex;
-  justify-content: flex-end;   /* alinha à direita */
+  justify-content: flex-start;  
   padding-right: 1rem;
-  margin-top: .25rem;            /* espaço generoso abaixo do título */
-  position: relative;
+  position: static;
   z-index: 2;
 }
 
@@ -170,7 +199,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; }
   text-align:center;
   top:50%;
   transform:translateY(-50%);
-  font-size:9rem;
+  font-size:14rem;
   font-weight:bold;
   color:black;
   opacity:.30;
@@ -179,7 +208,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; }
 }
 .disco-principal {
   position:absolute;
-  width:320px;
+  width: 400px;
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
@@ -377,7 +406,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; }
 .img-men    { width:517px; max-width:100%; height:413px; object-fit:cover; margin-top:11px; }
 .img-vinil  { width:231px; max-width:100%; height:275px; object-fit:cover; }
 .img-discos { width:308px; max-width:100%; height:187px; object-fit:cover; margin-left:6px; }
-.disco-2    { width:22rem; max-width:100%; margin-left:-6rem; }
+.disco-2    { width:14rem; max-width:100%; margin-left:-6rem; }
 
 /* ── CONTATO ─────────────────────────────────────────────────── */
 .contact { background-color:var(--bege); }
@@ -914,8 +943,12 @@ body { margin: 0; padding: 0; overflow-x: hidden; }
 }
 
 @media (max-width:900px) {
-  .echoes, .discos { font-size:8rem; }
-  .arm-vinyl { width:38rem; }
+
+  .echoes, .discos { font-size:7rem; }
+  .navbar.navbar-expand-lg { background-color: transparent;}
+  .collapse.navbar-collapse { background-color: transparent;}
+  .hero { background-image: url('../assets/img/mobile-bg.png'); background-size: cover;}
+  .arm-vinyl { display: none }
   .catalogo  { grid-template-columns:repeat(2,1fr); }
   .painel-grid { grid-template-columns:repeat(2,1fr); }
   .sobre { flex-direction:column; }
@@ -924,20 +957,22 @@ body { margin: 0; padding: 0; overflow-x: hidden; }
 }
 
 @media (max-width:768px) {
-  .echoes, .discos { font-size:5rem; }
+  .title {flex-direction: column; align-items: center; width: ;}
+  .echoes,
+  .discos {font-size: 18rem;}
+  .discos {margin-left: 0;}
   .arm-vinyl { width:100%; max-width:100vw; }
-  .title  { margin-bottom: 0; }
+  .desc { display: none;}
   .hero-btn-wrapper { margin-top: 1.5rem; padding-right: .5rem; }
   .catalogo { grid-template-columns:1fr; }
   .disco { min-height:12rem; }
   .cover { width:150px; min-width:150px; }
   .name  { font-size:1.8rem; }
   .preco { font-size:1.8rem; }
+  .page-title-contato-inv {display: none;}
 
   /* Sobre */
-  .galeria { flex-direction:column; }
-  .img-men { width:100%; height:auto; }
-  .disco-2 { width:100%; margin-left:0; }
+  .galeria { display: none }
   .titulo-vertical { display:none; }
 
   /* Contato */
