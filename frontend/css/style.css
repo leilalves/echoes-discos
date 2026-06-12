@@ -954,12 +954,13 @@ body { margin: 0; padding: 0; overflow-x: hidden; }
   .sobre { flex-direction:column; }
   .titulo-vertical h1 { font-size:8rem; }
   .titulo-vertical h2 { font-size:6rem; margin-top:5rem; }
+  .disco-principal { width: 250px;}
 }
 
 @media (max-width:768px) {
-  .title {flex-direction: column; align-items: center; width: ;}
+  .title {flex-direction: column; align-items: center;}
   .echoes,
-  .discos {font-size: 18rem;}
+  .discos {font-size: 5rem !important;}
   .discos {margin-left: 0;}
   .arm-vinyl { width:100%; max-width:100vw; }
   .desc { display: none;}
@@ -970,6 +971,7 @@ body { margin: 0; padding: 0; overflow-x: hidden; }
   .name  { font-size:1.8rem; }
   .preco { font-size:1.8rem; }
   .page-title-contato-inv {display: none;}
+  .nav-link { font-size: 2rem !important;}
 
   /* Sobre */
   .galeria { display: none }

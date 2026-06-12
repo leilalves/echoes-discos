@@ -64,7 +64,6 @@
     </div>
   </div>
 
-  <!-- Imagem do braço fica atrás (z-index:1) -->
   <div class="arm">
     <img src="/assets/img/bracoreso.png" class="arm-vinyl" alt="Mão segurando disco de vinil">
   </div>
@@ -719,6 +718,26 @@ function finalizarCompra() {
 
 // Inicializa o contador ao carregar
 atualizarContador();
+
+const menuNavbar = document.getElementById('navbarNav');
+const blocoTitulo = document.querySelector('.title');
+const botao = document.querySelector('.button')
+
+menuNavbar.addEventListener('show.bs.collapse', () => {
+  blocoTitulo.style.display = 'none';
+});
+
+menuNavbar.addEventListener('show.bs.collapse', () => {
+  botao.style.display = 'none';
+});
+
+menuNavbar.addEventListener('hidden.bs.collapse', () => {
+  blocoTitulo.style.display = 'flex';
+});
+
+menuNavbar.addEventListener('hidden.bs.collapse', () => {
+  botao.style.display = 'block';
+});
 </script>
 </body>
 </html>
